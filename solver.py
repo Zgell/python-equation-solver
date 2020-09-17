@@ -14,6 +14,7 @@ def solve(eq):
     character.
     '''
     rbracket = eq[::-1].find(')')
+    new_eq = eq[lbracket:rbracket]
 
     # Recursively solve the equation inside the brackets
     pass
