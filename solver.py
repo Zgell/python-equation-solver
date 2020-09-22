@@ -33,7 +33,7 @@ def tokenize(string):
 	return tokens
 '''
 
-def split_x(string, delim):
+def split_x(string, delim="+-*/^()"):
     stringlist = list(string)
     tokens = []  # The result which will be built up over time
     j = 0  # An iterator/placeholder variable
@@ -61,7 +61,10 @@ def compute(eq):
 def solve(eq):
     if (eq.count('(') > 1):  # IF there's more than one "level"...
         # Find the location of the first left bracket
-        lbracket = eq.find('(')
+        if (type(eq) is list):
+            lbracket = eq.index('(')
+        else:
+            lbracket = eq.find('(')
 
         # Find the location of the last right bracket
         '''
@@ -70,7 +73,10 @@ def solve(eq):
         certain character.
         "new_eq" will be the equation inside the outermost set of parentheses.
         '''
-        rbracket = eq[::-1].find(')')
+        if (type(eq) is list):
+        	rbracket = eq[::-1].index(')')
+        else:
+        	rbracket = eq[::-1].find(')')
         new_eq = eq[lbracket + 1:len(eq) - rbracket - 1]
 
         # Recursively solve the equation inside the brackets
@@ -78,8 +84,13 @@ def solve(eq):
 
     # If only one level remains...
     elif (eq.count('(') == 1) and (eq.count(')') == 1):
-        lbracket = eq.find('(')
-        rbracket = eq.find(')')
+        if (type(eq) is list):
+            lbracket = eq.index('(')
+            rbracket = eq.index(')')
+        else:
+            lbracket = eq.find('(')
+            rbracket = eq.find(')')
+
         new_eq = eq[lbracket + 1:rbracket]
         return new_eq
 
