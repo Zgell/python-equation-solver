@@ -2,8 +2,59 @@
 import math
 
 
-def compute(eq):
+def split_keep(string, delim):
+    tokens = string.split(delim)
+    for d in range(len(tokens) - 1):
+    	tokens.insert(2*d+1, delim)
+    return tokens
 
+'''
+def tokenize(string):
+	symbols = "/*+-"
+	tokens = split_keep(string, '^')
+	for op in symbols:
+		for i in range(0, len(tokens)):
+			if op in tokens[i]:
+				t = split_keep(tokens[i], op)
+				tokens.remove(tokens[i])
+				tokens[i:i] = t
+'''
+'''
+	for i in range(0, len(tokens)):
+		if '/' in tokens[i]:
+			t = split_keep(tokens[i], '/')
+			tokens.remove(tokens[i])
+			tokens[i:i] = t
+'''
+'''
+	for j in range(0, len(tokens)):
+		if (len(tokens[i]) == 0):
+			tokens.pop(i)
+	return tokens
+'''
+
+def split_x(string, delim):
+    stringlist = list(string)
+    tokens = []  # The result which will be built up over time
+    j = 0  # An iterator/placeholder variable
+    for i in range(0, len(stringlist)):
+        if stringlist[i] in delim:
+            tokens.append(''.join(stringlist[j:i]))
+            tokens.append(stringlist[i])
+            j = i + 1
+        elif (i == len(stringlist)-1):  # If you're at the end of the line
+            tokens.append(''.join(stringlist[j:i+1]))
+
+    # Remove unnecessary space characters
+    for k in range(0, tokens.count('')):
+    	tokens.remove('')
+
+    # Return the result
+    return tokens
+
+
+def compute(eq):
+    # Perform an EDMAS (BEDMAS without the brackets) operation
     return eq
 
 
@@ -36,7 +87,7 @@ def solve(eq):
     elif (eq.count('(') == 0) and (eq.count(')') == 0):
         return compute(eq)
 
-
-equation = input("Enter an equation: ")
-answer = solve(equation)
-print("Answer:", answer)
+if __name__ == "__main__":
+    equation = input("Enter an equation: ")
+    answer = solve(equation)
+    print("Answer:", answer)
