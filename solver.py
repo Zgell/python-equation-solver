@@ -9,6 +9,21 @@ def split_keep(string, delim):
     return tokens
 
 
+def frac_to_float(fraction):
+	try:
+		return float(fraction)
+	except ValueError:
+		num, denom = fraction.split('/')
+		num = float(num)
+		denom = float(denom)
+		try:
+			frac = num / denom
+		except ZeroDivisionError:
+			frac = 0
+			pass
+	return frac
+
+
 def split_x(string, delim="+-*/^()"):
     stringlist = list(string)
     tokens = []  # The result which will be built up over time
@@ -33,7 +48,7 @@ def calculate(num1, operator, num2):
 	if (operator == "^"):
 		return (float(num1) ** float(num2))
 	elif (operator == "*"):
-		return (float(num1) * float(num2))
+		return (frac_to_float(num1) * frac_to_float(num2))
 	elif (operator == "/"):
 		return (float(num1) / float(num2))
 	elif (operator == "+"):
@@ -48,6 +63,19 @@ def compute(eq):
     # Perform an EDMAS (BEDMAS without the brackets) operation
     operations = "^*/+-"
     eqa = eq
+
+    for divide in range(0, eqa.count('/')):
+    	divide_index = eqa.index('/')
+    	eqa[divide_index] = '*'
+    	oldnum = eqa[divide_index+1]
+    	eqa[divide_index+1] = '1/' + oldnum
+
+    for minus in range(0, eqa.count('-')):
+        minus_index = eqa.index('-')
+        eqa[minus_index] = '+'
+        oldnum = eqa[minus_index+1]
+        eqa[minus_index+1] = '-' + oldnum
+
 
     for op in operations:
     	opcount = eqa.count(op)
@@ -80,6 +108,7 @@ def solve(eq):
         new_eq = eq[lbracket + 1:len(eq) - rbracket - 1]
 
         # Recursively solve the equation inside the brackets
+        next_eq = solve(new_eq)
         return new_eq
 
     # If only one level remains...
@@ -92,6 +121,7 @@ def solve(eq):
             rbracket = eq.find(')')
 
         new_eq = eq[lbracket + 1:rbracket]
+        next_eq = solve(new_eq)
         return new_eq
 
     # If you're at the innermost level with no brackets
