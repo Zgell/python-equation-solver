@@ -121,12 +121,23 @@ def solve(eq):
             rbracket = eq.find(')')
 
         new_eq = eq[lbracket + 1:rbracket]
+        #print("New EQ:", new_eq)
         next_eq = solve(new_eq)
-        return new_eq
+        #print("Next EQ:", next_eq)
+        #eq[lbracket + 1:rbracket] = next_eq
+        eq = eq[:lbracket] + str(next_eq[0]) + eq[rbracket+1:]
+        #print("Updated EQ:", eq)
+        try:
+            return float(eq)
+        except ValueError:  # It hasn't been fully computed yet...
+            eq = solve(eq)
+        print("EQ:", eq)
+        return float(eq[0])
 
     # If you're at the innermost level with no brackets
     elif (eq.count('(') == 0) and (eq.count(')') == 0):
-        return compute(eq)
+        answer = compute(split_x(eq))
+        return answer[0]
 
 
 if __name__ == "__main__":
