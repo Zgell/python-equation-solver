@@ -108,8 +108,15 @@ def solve(eq):
         new_eq = eq[lbracket + 1:len(eq) - rbracket - 1]
 
         # Recursively solve the equation inside the brackets
+        print('NEW EQ', new_eq)
         next_eq = solve(new_eq)
-        return new_eq
+        eq = eq[:lbracket] + str(next_eq) + eq[len(eq) - rbracket:]
+        print('SUBBED EQ', eq)
+        try:
+            return float(eq)
+        except ValueError:  # If a computation is needed...
+            eq = solve(eq)
+        return float(eq)
 
     # If only one level remains...
     elif (eq.count('(') == 1) and (eq.count(')') == 1):
@@ -125,14 +132,14 @@ def solve(eq):
         next_eq = solve(new_eq)
         #print("Next EQ:", next_eq)
         #eq[lbracket + 1:rbracket] = next_eq
-        eq = eq[:lbracket] + str(next_eq[0]) + eq[rbracket+1:]
+        eq = eq[:lbracket] + str(next_eq) + eq[rbracket+1:]
         #print("Updated EQ:", eq)
         try:
             return float(eq)
         except ValueError:  # It hasn't been fully computed yet...
             eq = solve(eq)
         print("EQ:", eq)
-        return float(eq[0])
+        return float(eq)
 
     # If you're at the innermost level with no brackets
     elif (eq.count('(') == 0) and (eq.count(')') == 0):
