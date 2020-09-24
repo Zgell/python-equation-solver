@@ -8,30 +8,6 @@ def split_keep(string, delim):
     	tokens.insert(2*d+1, delim)
     return tokens
 
-'''
-def tokenize(string):
-	symbols = "/*+-"
-	tokens = split_keep(string, '^')
-	for op in symbols:
-		for i in range(0, len(tokens)):
-			if op in tokens[i]:
-				t = split_keep(tokens[i], op)
-				tokens.remove(tokens[i])
-				tokens[i:i] = t
-'''
-'''
-	for i in range(0, len(tokens)):
-		if '/' in tokens[i]:
-			t = split_keep(tokens[i], '/')
-			tokens.remove(tokens[i])
-			tokens[i:i] = t
-'''
-'''
-	for j in range(0, len(tokens)):
-		if (len(tokens[i]) == 0):
-			tokens.pop(i)
-	return tokens
-'''
 
 def split_x(string, delim="+-*/^()"):
     stringlist = list(string)
@@ -97,6 +73,7 @@ def solve(eq):
     # If you're at the innermost level with no brackets
     elif (eq.count('(') == 0) and (eq.count(')') == 0):
         return compute(eq)
+
 
 if __name__ == "__main__":
     equation = input("Enter an equation: ")
