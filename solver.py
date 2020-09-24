@@ -29,8 +29,32 @@ def split_x(string, delim="+-*/^()"):
     return tokens
 
 
+def calculate(num1, operator, num2):
+	if (operator == "^"):
+		return (float(num1) ** float(num2))
+	elif (operator == "*"):
+		return (float(num1) * float(num2))
+	elif (operator == "/"):
+		return (float(num1) / float(num2))
+	elif (operator == "+"):
+		return (float(num1) + float(num2))
+	elif (operator == "-"):
+		return (float(num1) - float(num2))
+	else:
+		return 0
+
+
 def compute(eq):
     # Perform an EDMAS (BEDMAS without the brackets) operation
+    operations = "^*/+-"
+    eqa = eq
+
+    for op in operations:
+    	opcount = eqa.count(op)
+    	for i in range(0, opcount):
+    		opindex = eqa.index(op)
+    		calclist = eqa[opindex-1:opindex+2]
+    		eqa[opindex-1:opindex+2] = [calculate(calclist[0], calclist[1], calclist[2])]
     return eq
 
 
