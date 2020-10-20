@@ -1,157 +1,80 @@
-# -----------------------------------------------------------------------------
-import math
+# ============================================================================
+# Python Equation Solver
+#
+# By: Zgell
+# ============================================================================
 
 
-def split_keep(string, delim):
-    tokens = string.split(delim)
-    for d in range(len(tokens) - 1):
-    	tokens.insert(2*d+1, delim)
-    return tokens
+def get_level_map(raw_eq):
+    level_map = []
+    level = 0
+    for char in raw_eq:
+        if char is "(":
+            level += 1
+        elif char is ")":
+            level -= 1
+
+        level_map.append(level)
+
+    return level_map
+
+'''
+def child_analysis(eq):
+    # Set up variables
+    children = [""]
+    lbracket, rbracket = [0, 0]  # Used to count levels of the equation
+    index_l, index_r = [0, 0]
+
+    # Loop through equation, save anything inside parentheses to "children"
+    for i in range(0, len(eq)):
+        if eq[i] == "(":
+            lbracket += 1
+            index_l = i
+        elif eq[i] == ")":
+            rbracket += 1
+            index_r = i
+
+        # If we find a whole child unit
+        if (lbracket == rbracket) and (lbracket*rbracket > 0):
+'''
 
 
-def frac_to_float(fraction):
-	try:
-		return float(fraction)
-	except ValueError:
-		num, denom = fraction.split('/')
-		num = float(num)
-		denom = float(denom)
-		try:
-			frac = num / denom
-		except ZeroDivisionError:
-			frac = 0
-			pass
-	return frac
+class Equation:
+    def __init__(self, raw_equation):
+        self.raw = raw_equation
 
-
-def split_x(string, delim="+-*/^()"):
-    stringlist = list(string)
-    tokens = []  # The result which will be built up over time
-    j = 0  # An iterator/placeholder variable
-    for i in range(0, len(stringlist)):
-        if stringlist[i] in delim:
-            tokens.append(''.join(stringlist[j:i]))
-            tokens.append(stringlist[i])
-            j = i + 1
-        elif (i == len(stringlist)-1):  # If you're at the end of the line
-            tokens.append(''.join(stringlist[j:i+1]))
-
-    # Remove unnecessary space characters
-    for k in range(0, tokens.count('')):
-    	tokens.remove('')
-
-    # Return the result
-    return tokens
-
-
-def calculate(num1, operator, num2):
-	if (operator == "^"):
-		return (float(num1) ** float(num2))
-	elif (operator == "*"):
-		return (frac_to_float(num1) * frac_to_float(num2))
-	elif (operator == "/"):
-		return (float(num1) / float(num2))
-	elif (operator == "+"):
-		return (float(num1) + float(num2))
-	elif (operator == "-"):
-		return (float(num1) - float(num2))
-	else:
-		return 0
-
-
-def compute(eq):
-    # Perform an EDMAS (BEDMAS without the brackets) operation
-    operations = "^*/+-"
-    eqa = eq
-
-    for divide in range(0, eqa.count('/')):
-    	divide_index = eqa.index('/')
-    	eqa[divide_index] = '*'
-    	oldnum = eqa[divide_index+1]
-    	eqa[divide_index+1] = '1/' + oldnum
-
-    for minus in range(0, eqa.count('-')):
-        minus_index = eqa.index('-')
-        eqa[minus_index] = '+'
-        oldnum = eqa[minus_index+1]
-        eqa[minus_index+1] = '-' + oldnum
-
-
-    for op in operations:
-    	opcount = eqa.count(op)
-    	for i in range(0, opcount):
-    		opindex = eqa.index(op)
-    		calclist = eqa[opindex-1:opindex+2]
-    		print('CALCLIST', calclist)
-    		if (len(calclist) > 1):
-    		    eqa[opindex-1:opindex+2] = [calculate(calclist[0], calclist[1], calclist[2])]
-    		else:
-    			eqa[opindex-1:opindex+2] = [calclist]
-    return eq
-
-
-def solve(eq):
-    if (eq.count('(') > 1):  # IF there's more than one "level"...
-        # Find the location of the first left bracket
-        if (type(eq) is list):
-            lbracket = eq.index('(')
+        # ONLY WORKS FOR ONE CHILD EQUATION
+        # EQS OF THE FORM A+(B*C)+D*(E+F) will NOT work!
+        if '(' in self.raw:
+            # Define indices of outermost parentheses
+            ind_start = self.raw.find('(')
+            ind_end = self.raw[::-1].find(')')
+            # Do this calculation before calling "Equation"
+            endcap = len(self.raw) - ind_end - 1
+            self.child = Equation(self.raw[ind_start+1:endcap])
+            self.hasChild = True
         else:
-            lbracket = eq.find('(')
+            self.hasChild = False
 
-        # Find the location of the last right bracket
-        '''
-        NOTE: eq[::-1] is just eq but in reverse order.
-        This is because Python has no built-in method to get the last of a 
-        certain character.
-        "new_eq" will be the equation inside the outermost set of parentheses.
-        '''
-        if (type(eq) is list):
-        	rbracket = eq[::-1].index(')')
-        else:
-        	rbracket = eq[::-1].find(')')
-        new_eq = eq[lbracket + 1:len(eq) - rbracket - 1]
+    def __str__(self):
+        return "Equation: " + self.raw
 
-        # Recursively solve the equation inside the brackets
-        #print('NEW EQ', new_eq)
-        next_eq = solve(new_eq)
-        eq = eq[:lbracket] + str(next_eq) + eq[len(eq) - rbracket:]
-        #print('SUBBED EQ', eq)
-        try:
-            return float(eq)
-        except ValueError:  # If a computation is needed...
-            eq = solve(eq)
-        return float(eq)
-
-    # If only one level remains...
-    elif (eq.count('(') == 1) and (eq.count(')') == 1):
-        if (type(eq) is list):
-            lbracket = eq.index('(')
-            rbracket = eq.index(')')
-        else:
-            lbracket = eq.find('(')
-            rbracket = eq.find(')')
-
-        new_eq = eq[lbracket + 1:rbracket]
-        print("New EQ:", new_eq)
-        next_eq = solve(new_eq)
-        print("Next EQ:", next_eq)
-        #eq[lbracket + 1:rbracket] = next_eq
-        eq = eq[:lbracket] + str(next_eq) + eq[rbracket+1:]
-        print("Updated EQ:", eq)
-        try:
-            return float(eq)
-        except ValueError:  # It hasn't been fully computed yet...
-            eq = solve(eq)
-        print("EQ:", eq)
-        return float(eq)
-
-    # If you're at the innermost level with no brackets
-    elif (eq.count('(') == 0) and (eq.count(')') == 0):
-        answer = compute(split_x(eq))
-        return answer[0]
+    def get_raw(self):
+        return self.raw
 
 
 if __name__ == "__main__":
-    equation = input("Enter an equation: ")
-    answer = solve(equation)
-    print("Answer:", answer)
+    # Get user input
+    userinput = input('Enter an algebraic expression to be simplified here: ')
+    eq = Equation(userinput)
+    print(eq)
+    print(get_level_map(eq.get_raw()))
+    '''
+    try:
+        print(eq.child)
+        print(eq.child.get_raw())
+    except:
+        pass
+    print(eq.hasChild)
+    '''
+    pass
