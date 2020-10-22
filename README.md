@@ -25,8 +25,8 @@ My current approach for the algorithm is to utilize some object-oriented program
 An example of what a level map for a certain equation looks like:
 
 ```
-Equation: 2+(3*8*(9-1-1)/4)-3^(1+1+0+1)
-LevelMap: 00111112222221110000111111110
+Equation: 2 + ( 3 * 8 * ( 9 - 1 - 1 ) / 4 ) - 3 ^ ( 1 + 1 + 0 + 1 )
+LevelMap: 0 0 1 1 1 1 1 2 2 2 2 2 2 1 1 1 0 0 0 0 1 1 1 1 1 1 1 1 0
 ```
 
 The level map can be used to easily identify the innermost set of parentheses easily by finding the maximum in the sequence. It also identifies all of the nested equations as opposed to just the first one. This approach is already significantly better than the first version of this algorithm.
